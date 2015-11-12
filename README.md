@@ -1,2 +1,2 @@
-# ruaicup-local-runner-pro
-Using this tool will allow you to test your strategy locally on your computer
+# Plugin for Russian AI Cup 2015 
+Using this plugin will allow you to test your strategy with couple additional features.
