@@ -20,25 +20,11 @@ public final class LocalTestRendererListener {
     public void beforeDrawScene(Graphics graphics, World world, Game game, int canvasWidth, int canvasHeight,
                                 double left, double top, double width, double height) {
         updateFields(graphics, world, game, canvasWidth, canvasHeight, left, top, width, height);
-
-        graphics.setColor(Color.BLACK);
-        drawRect(100.0D, 100.0D, 5100.0D, 5100.0D);
-
-        for (Car car : world.getCars()) {
-            drawCircle(car.getX(), car.getY(), hypot(car.getWidth(), car.getHeight()) / 2.0D);
-        }
     }
 
     public void afterDrawScene(Graphics graphics, World world, Game game, int canvasWidth, int canvasHeight,
                                double left, double top, double width, double height) {
         updateFields(graphics, world, game, canvasWidth, canvasHeight, left, top, width, height);
-
-        graphics.setColor(Color.BLACK);
-        drawCircle(2600.0D, 2600.0D, 2400.0D);
-
-        for (Car car : world.getCars()) {
-            fillCircle(car.getX(), car.getY(), car.getHeight() / 2.0D);
-        }
     }
 
     private void updateFields(Graphics graphics, World world, Game game, int canvasWidth, int canvasHeight,
