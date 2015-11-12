@@ -1,4 +1,5 @@
 import java.awt.*;
+import java.lang.String;
 
 import model.*;
 
@@ -20,11 +21,55 @@ public final class LocalTestRendererListener {
     public void beforeDrawScene(Graphics graphics, World world, Game game, int canvasWidth, int canvasHeight,
                                 double left, double top, double width, double height) {
         updateFields(graphics, world, game, canvasWidth, canvasHeight, left, top, width, height);
+
+        double trackTileSize = game.getTrackTileSize();
+        long myId = -1;
+        int wpId = 1;
+        double nOffset = 60.0D;
+
+        for (Player player : world.getPlayers()) {
+            if (player.getName().equals("MyStrategy")) {
+                myId = player.getId();
+            }
+        }
+
+        for (int[] waypoint : world.getWaypoints()) {
+            double x = waypoint[0] * trackTileSize + 100.0D;
+            double y = waypoint[1] * trackTileSize + 100.0D;
+
+            graphics.setColor(new Color(252, 255, 127));
+            fillRect(x, y, trackTileSize - 200.0D, trackTileSize - 200.0D);
+        }
+
+        for (Car car : world.getCars()) {
+            if (car.getPlayerId() == myId) {
+                double x = car.getNextWaypointX() * trackTileSize + 100.0D;
+                double y = car.getNextWaypointY() * trackTileSize + 100.0D;
+
+                graphics.setColor(new Color(75, 255, 63));
+                fillRect(x, y, trackTileSize - 200.0D, trackTileSize - 200.0D);
+            }
+        }
+
+        for (int[] waypoint : world.getWaypoints()) {
+            double x = waypoint[0] * trackTileSize + 320.0D;
+            double y = waypoint[1] * trackTileSize + 490.0D;
+            if (wpId >= 10) {
+                x = x - nOffset;
+            }
+
+            graphics.setColor(Color.BLACK);
+            drawString(wpId++ + "", x, y);
+        }
+
+        graphics.setColor(Color.BLACK);
     }
 
     public void afterDrawScene(Graphics graphics, World world, Game game, int canvasWidth, int canvasHeight,
                                double left, double top, double width, double height) {
         updateFields(graphics, world, game, canvasWidth, canvasHeight, left, top, width, height);
+
+
     }
 
     private void updateFields(Graphics graphics, World world, Game game, int canvasWidth, int canvasHeight,
@@ -40,6 +85,13 @@ public final class LocalTestRendererListener {
         this.top = top;
         this.width = width;
         this.height = height;
+    }
+
+    private void drawString(String text, double x1, double y1) {
+        Point2I stringBegin = toCanvasPosition(x1, y1);
+
+        graphics.setFont(new Font("Serif", Font.PLAIN, 42));
+        graphics.drawString(text, stringBegin.getX(), stringBegin.getY());
     }
 
     private void drawLine(double x1, double y1, double x2, double y2) {
