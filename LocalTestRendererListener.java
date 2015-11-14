@@ -1,5 +1,6 @@
 import java.awt.*;
 import java.lang.String;
+import static java.lang.StrictMath.*;
 
 import model.*;
 
@@ -9,27 +10,35 @@ public final class LocalTestRendererListener {
     private Graphics graphics;
     private World world;
     private Game game;
-
     private int canvasWidth;
-    private int canvasHeight;
 
+    private int canvasHeight;
     private double left;
+
     private double top;
     private double width;
     private double height;
+
+    private static final int FONT_SIZE_BIG = 42;
+    private static final int FONT_SIZE_SMALL = 18;
+
+    private static int currentWPId = -1;
+    private static long myId = -1;
 
     public void beforeDrawScene(Graphics graphics, World world, Game game, int canvasWidth, int canvasHeight,
                                 double left, double top, double width, double height) {
         updateFields(graphics, world, game, canvasWidth, canvasHeight, left, top, width, height);
 
         double trackTileSize = game.getTrackTileSize();
-        long myId = -1;
-        int wpId = 1;
+        Point2I nextWP = new Point2I();
+        int nextWPId = 1;
         double nOffset = 60.0D;
 
-        for (Player player : world.getPlayers()) {
-            if (player.getName().equals("MyStrategy")) {
-                myId = player.getId();
+        if (myId == -1) {
+            for (Player player : world.getPlayers()) {
+                if (player.getName().equals("MyStrategy")) {
+                    myId = player.getId();
+                }
             }
         }
 
@@ -43,8 +52,10 @@ public final class LocalTestRendererListener {
 
         for (Car car : world.getCars()) {
             if (car.getPlayerId() == myId) {
-                double x = car.getNextWaypointX() * trackTileSize + 100.0D;
-                double y = car.getNextWaypointY() * trackTileSize + 100.0D;
+                nextWP.setX(car.getNextWaypointX());
+                nextWP.setY(car.getNextWaypointY());
+                double x = nextWP.getX() * trackTileSize + 100.0D;
+                double y = nextWP.getY() * trackTileSize + 100.0D;
 
                 graphics.setColor(new Color(75, 255, 63));
                 fillRect(x, y, trackTileSize - 200.0D, trackTileSize - 200.0D);
@@ -52,14 +63,41 @@ public final class LocalTestRendererListener {
         }
 
         for (int[] waypoint : world.getWaypoints()) {
+            if (world.getMapName().equals("map01") && currentWPId > 6 && nextWP.getX() == 3 && nextWP.getY() == 4) {
+                currentWPId = 11;
+                break;
+            }
+            if (nextWP.getX() == waypoint[0] && nextWP.getY() == waypoint[1]) {
+                currentWPId = nextWPId - 1;
+                break;
+            }
+            nextWPId = nextWPId + 1;
+        }
+
+        nextWPId = 1;
+        graphics.setColor(Color.BLACK);
+        for (int[] waypoint : world.getWaypoints()) {
             double x = waypoint[0] * trackTileSize + 320.0D;
             double y = waypoint[1] * trackTileSize + 490.0D;
-            if (wpId >= 10) {
+            if (nextWPId >= 10) {
                 x = x - nOffset;
             }
 
-            graphics.setColor(Color.BLACK);
-            drawString(wpId++ + "", x, y);
+            if (world.getMapName().equals("map01")) {
+                if (nextWPId == 5 && (currentWPId >= 0 && currentWPId < 6)) {
+                    drawString(nextWPId + "", FONT_SIZE_BIG, x, y);
+                    drawString("12", FONT_SIZE_SMALL, x + 220.0D, y + 200.0D);
+                } else if (nextWPId == 12 && currentWPId >= 6) {
+                    drawString(nextWPId + "", FONT_SIZE_BIG, x, y);
+                    drawString("5", FONT_SIZE_SMALL, x - 170.0D, y + 200.0D);
+                } else if (nextWPId != 5 && nextWPId != 12) {
+                    drawString(nextWPId + "", FONT_SIZE_BIG, x, y);
+                }
+            } else {
+                drawString(nextWPId + "", FONT_SIZE_BIG, x, y);
+            }
+
+            nextWPId = nextWPId + 1;
         }
 
         graphics.setColor(Color.BLACK);
@@ -69,7 +107,17 @@ public final class LocalTestRendererListener {
                                double left, double top, double width, double height) {
         updateFields(graphics, world, game, canvasWidth, canvasHeight, left, top, width, height);
 
+        for (Car car : world.getCars()) {
+            if (car.getPlayerId() == myId) {
+                graphics.setColor(new Color(255, 255, 255));
+                double speedModule = hypot(car.getSpeedX(), car.getSpeedY());
+                fillRect(car.getX() - 50.0D, car.getY() - 50.0D, 200.0D, 100.0D);
+                graphics.setColor(Color.BLACK);
+                drawString(String.format("%2.0f", speedModule)+ "", FONT_SIZE_SMALL, car.getX() - 40.0D, car.getY() + 50.0D);
+            }
+        }
 
+        graphics.setColor(Color.BLACK);
     }
 
     private void updateFields(Graphics graphics, World world, Game game, int canvasWidth, int canvasHeight,
@@ -87,10 +135,10 @@ public final class LocalTestRendererListener {
         this.height = height;
     }
 
-    private void drawString(String text, double x1, double y1) {
+    private void drawString(String text, int fontSize, double x1, double y1) {
         Point2I stringBegin = toCanvasPosition(x1, y1);
 
-        graphics.setFont(new Font("Serif", Font.PLAIN, 42));
+        graphics.setFont(new Font("Serif", Font.PLAIN, fontSize));
         graphics.drawString(text, stringBegin.getX(), stringBegin.getY());
     }
 
