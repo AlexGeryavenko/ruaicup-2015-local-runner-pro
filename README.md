@@ -1,6 +1,14 @@
 # Plugin for Russian AI Cup 2015 
 Using this plugin will allow you to test your strategy with couple additional features.
 
+Release notes:
+
+v1.0
+- Numbered and higlight all waypoints;
+- Addition higlight next waypoints;
+- Display speed;
+- Apply solytion for map01 tile[3;4], duplication waypoints index.
+
 Setup:
 
 1. Download [local-runner](http://russianaicup.ru/p/localrunner "local-runner").
