@@ -9,6 +9,8 @@ v1.0
 - Display speed;
 - Apply solytion for map01 tile[3;4], duplication waypoints index.
 
+![GitHub Logo](https://github.com/AlexGeryavenko/ruaicup-2015-local-runner-pro/blob/master/local-runner-pro_prtsc.png?raw=true)
+
 Setup:
 
 1. Download [local-runner](http://russianaicup.ru/p/localrunner "local-runner").
